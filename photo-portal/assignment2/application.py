@@ -149,15 +149,14 @@ def adminlogin():
 # 1.4 Save the logged in user's name in flask session and pass that in the render_template for username parameter.
 
 
+@app.route("/")
+def index():
+    return render_template('index.html')
+
+
 @app.route("/admin")
 def adminindex():
     return render_template('adminindex.html')
-
-
-# Requirement 1.1
-# Render index.html for the route "/" (refer to adminindex method above)
-# You need to add index.html - refer to adminindex.html
-# Add only one input box in index.html (see requirement 1.1 in assignment description)
 
 
 
