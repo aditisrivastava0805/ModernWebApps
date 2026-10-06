@@ -149,8 +149,19 @@ def adminlogin():
 # 1.4 Save the logged in user's name in flask session and pass that in the render_template for username parameter.
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        gmail = request.form.get('gmail', '').strip()
+        session['username'] = gmail
+        session['role'] = 'general'
+        return render_template(
+            'photo-portal.html',
+            upload_form_display='display:none;',
+            username=gmail,
+            photo_upload_status='Login successful',
+            photo_list=photos
+        )
     return render_template('index.html')
 
 
