@@ -14,7 +14,9 @@ function show_photo_details(photo_name, date_taken, tags) {
 
 // Requirement 4.3 - Implement the preview_photo method that displays the photo in modal
 function preview_photo(photo_name) {
-
+  document.getElementById("image-modal-body").innerHTML =
+    '<img src="/static/images/photos/' + photo_name + '" class="img-fluid">';
+  $('#imageModal').modal('show');
 }
 
 

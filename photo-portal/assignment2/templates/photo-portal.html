@@ -167,6 +167,14 @@
 								1. https://jinja.palletsprojects.com/en/3.0.x/templates/ 
                                 				2. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
 							-->
+							{% for photo in photo_list %}
+							<li>
+								<figure>
+									<img src="{{ url_for('static', filename='images/photos/' + photo.name) }}" height="60" width="60" onclick="preview_photo('{{ photo.name }}')">
+									<figcaption>{{ photo.name }}</figcaption>
+								</figure>
+							</li>
+							{% endfor %}
 						</ol>
 					</div>
 				</div> <!-- row2 -->
