@@ -159,7 +159,7 @@ def index():
             'photo-portal.html',
             upload_form_display='display:none;',
             username=gmail,
-            photo_upload_status='Login successful',
+            photo_upload_status='TODO: Implement slide-show functionality',
             photo_list=photos
         )
     return render_template('index.html')
