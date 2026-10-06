@@ -99,18 +99,20 @@ def upload_photo():
     return render_template("photo-portal.html", username=username, photo_list=photos)
 
 
-@app.route("/logout",methods=['POST'])
+@app.route("/logout", methods=['POST'])
 def logout():
     app.logger.info("Logout called.")
     app.logger.info("Before returning...")
-    user = flask.session["username"]
-    flask.session.pop('username', None)
+
+    username = session.get('username', '')
+    role = session.get('role')
+    session.clear()
 
     # Requirement 2.1 and 2.2
-    # Use the "user" variable above to determine which endpoint to redirect to
-    # Use assumption 1 to determine whether the user is admin user or general user
-
-    return flask.redirect("/admin")
+    # Use assumption 1 to determine whether the user is admin or general user.
+    if username.endswith('@gmail.com') or role == 'general':
+        return redirect('/')
+    return redirect('/admin')
 
 
 @app.route("/adminlogin", methods=['POST'])
