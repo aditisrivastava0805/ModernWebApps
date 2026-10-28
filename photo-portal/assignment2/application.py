@@ -1,6 +1,7 @@
-from flask import Flask, redirect, request, url_for
+from flask import Flask, jsonify, redirect, request, url_for
 from flask import Response
 
+import json
 import requests
 import secrets
 
@@ -58,6 +59,19 @@ class Photo:
 		self.name = photo_name
 		self.date_taken = date_taken
 		self.tags = tags
+
+
+@app.route("/photos", methods=["GET"])
+def get_photos():
+    photo_list = [
+        json.dumps({
+            "name": photo.name,
+            "date_taken": photo.date_taken,
+            "tags": photo.tags
+        })
+        for photo in photos
+    ]
+    return jsonify({"photos": photo_list})
 
 # Requirement 5
 # 5.1 Define the method that will handle the search_form submission
