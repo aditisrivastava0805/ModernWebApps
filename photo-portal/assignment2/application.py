@@ -111,6 +111,16 @@ def upload_photo():
     filename = filename.strip()
     app.logger.info("File Name:%s\n", filename)
 
+    if any(photo.name == filename for photo in photos):
+        status = "Photo " + filename + " already exists."
+        return render_template(
+            "photo-portal.html",
+            username=username,
+            photo_list=photos,
+            photo_upload_status=status,
+            upload_form_display='display:block;'
+        )
+
     if not os.path.exists(PHOTO_FOLDER):
         os.makedirs(PHOTO_FOLDER)
 
