@@ -67,6 +67,35 @@ class Photo:
 # 5.5 Set empty photo list and appropriate status message when rendering the photo-portal.html
 # Pass the username by extracting it from flask's session dictionary.
 
+@app.route("/search", methods=["POST"])
+def search():
+    username = session.get('username', '')
+    search_by = request.form['search_select']
+    term = request.form['search_input'].strip()
+
+    matches = []
+    for photo in photos:
+        if search_by == 'Name' and term.lower() in photo.name.lower():
+            matches.append(photo)
+        elif search_by == 'Tags' and term.lower() in photo.tags.lower():
+            matches.append(photo)
+        elif search_by == 'Date' and term == photo.date_taken:
+            matches.append(photo)
+
+    if matches:
+        status = "Matching photos found"
+    else:
+        status = "No matching photos found"
+
+    # Assumption 1: general users have gmail addresses, admin does not.
+    upload_form_display = 'display:none;' if username.endswith('@gmail.com') else 'display:block;'
+
+    return render_template('photo-portal.html',
+                           upload_form_display=upload_form_display,
+                           username=username,
+                           photo_upload_status=status,
+                           photo_list=matches)
+
 @app.route("/upload", methods=["POST"])
 def upload_photo():
     app.logger.info("Inside upload_photo")

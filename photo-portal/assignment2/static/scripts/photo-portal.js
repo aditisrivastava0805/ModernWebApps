@@ -1,10 +1,21 @@
 // Requirement 5.2
 function validate_data() {
-  // hint: https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/value
-  // Get the search_select value and search_input value
-  // Use document.getElementById()
-  // return false if the data validation checks fail. Also raise appropriate alert.
-  // return true if the data validation checks pass.
+  var search_select = document.getElementById("search_select").value;
+  var search_input = document.getElementById("search_input").value.trim();
+
+  if (search_select === "Date" && !/^\d{2}\/\d{2}\/\d{4}$/.test(search_input)) {
+    alert("Date format should be MM/DD/YYYY");
+    return false;
+  }
+  if (search_select === "Name" && search_input === "") {
+    alert("Name should not be empty");
+    return false;
+  }
+  if (search_select === "Tags" && search_input === "") {
+    alert("Tags should not be empty");
+    return false;
+  }
+  return true;
 }
 
 function show_photo_details(photo_name, date_taken, tags) {
