@@ -73,6 +73,14 @@ def get_photos():
     ]
     return jsonify({"photos": photo_list})
 
+
+@app.route("/photos/<photo_name>/tags", methods=["GET"])
+def get_photo_tags(photo_name):
+    for photo in photos:
+        if photo.name == photo_name:
+            return jsonify({"tags": photo.tags})
+    return jsonify({"tags": ""})
+
 # Requirement 5
 # 5.1 Define the method that will handle the search_form submission
 # 5.3 Implement search of photos based the input criteria and the provided data
