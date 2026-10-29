@@ -227,43 +227,48 @@ def search():
 
 @app.route("/upload", methods=["POST"])
 def upload_photo():
-	app.logger.info("Inside upload_photo")
+    app.logger.info("Inside upload_photo")
 
-	username = ""
-	if "username" in flask.session:
-		username = flask.session['username']
+    username = ""
+    if "username" in flask.session:
+        username = flask.session['username']
 
-	date_taken = request.form["date_taken"].strip()
-	tags = request.form["tags"].strip()
-	file = request.files['photo_name']
-	filename = secure_filename(file.filename)
-	filename = filename.strip()
-	app.logger.info("File Name:%s\n", filename)
-	app.logger.info("Date taken:" + date_taken)
-	app.logger.info("Tags:" + tags)
+    date_taken = request.form["date_taken"].strip()
+    tags = request.form["tags"].strip()
+    file = request.files['photo_name']
+    filename = secure_filename(file.filename)
+    filename = filename.strip()
+    app.logger.info("File Name:%s\n", filename)
+    app.logger.info("Date taken:" + date_taken)
+    app.logger.info("Tags:" + tags)
 
-	if not os.path.exists(PHOTO_FOLDER):
-		os.makedirs(PHOTO_FOLDER)
+    photo_data = PhotoData(name=filename, date_taken=date_taken, tags=tags)
+    status = ""
+    db_session = DBSession()
 
-	file.save(PHOTO_FOLDER + "/" + filename)
+    # Requirement 1: Use SQLAlchemy to store the photo
+    # First query to find out if a photo with the name already exists.
+    # Commit the photo only if photo with the name does not exist.
+    existing_photo = db_session.query(PhotoData).filter_by(name=filename).first()
+    if existing_photo:
+        status = "Photo " + filename + " already exists."
+    else:
+        if not os.path.exists(PHOTO_FOLDER):
+            os.makedirs(PHOTO_FOLDER)
+        file.save(PHOTO_FOLDER + "/" + filename)
+        db_session.add(photo_data)
+        db_session.commit()
+    db_session.close()
 
-	photo_data = PhotoData(name=filename, date_taken=date_taken, tags=tags)
+    photos = load_photos()
 
-	# Requirement 1: Use SQLAlchemy to store the photo
-	# First query to find out if a photo with the name already exists.
-	# Commit the photo only if photo with the name does not exist.
+    slide_show_display = "display:block"
 
-
-
-	photos = load_photos()
-
-	slide_show_display = "display:block"
-
-	return render_template("photo-portal.html",
-							username=username,
-							photo_upload_status=status,
-							slide_show_display=slide_show_display,
-							photo_list=photos,
+    return render_template("photo-portal.html",
+                            username=username,
+                            photo_upload_status=status,
+                            slide_show_display=slide_show_display,
+                            photo_list=photos,
                             user="admin")
 
 
