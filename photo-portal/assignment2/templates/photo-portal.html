@@ -62,6 +62,29 @@
 		</div>
 	</div>
 
+	<div class="modal fade" id="updateTagsModal" tabindex="-1" role="dialog" aria-labelledby="updateTagsModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="updateTagsModalLabel">Image tags</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					</button>
+				</div>
+				<form action="/update_tags" method="post">
+					<div class="modal-body">
+						<p id="update-tags-current"></p>
+						<input type="hidden" name="photo_name" id="update_tags_photo_name">
+						<label for="new_tags">New tags:</label>
+						<input type="text" name="new_tags" id="new_tags" required>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">Update tags</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
 	<div class="container-fluid" style="background-color:transparent">
 		<div class="row">
 			<div class="col">
@@ -129,7 +152,7 @@
 						{% if not username.endswith('@gmail.com') %}
 						<a href="#">Delete Photo</a>
 						<hr>
-						<a href="#">Update Tags</a>
+						<a href="#" onclick="open_update_tags_modal(); return false;">Update Tags</a>
 						{% endif %}
 					</div>
 				</div> <!-- row2 -->

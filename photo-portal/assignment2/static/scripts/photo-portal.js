@@ -35,6 +35,27 @@ function show_settings() {
   alert("Settings called.");
 }
 
+function open_update_tags_modal() {
+  var selected_photo = document.querySelector('input[name="selected_photo"]:checked');
+  if (!selected_photo) {
+    return;
+  }
+
+  var photo_name = selected_photo.value;
+  fetch("/photos/" + encodeURIComponent(photo_name) + "/tags")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      var current_tags = data.tags || "";
+      document.getElementById("update_tags_photo_name").value = photo_name;
+      document.getElementById("new_tags").value = current_tags;
+      document.getElementById("update-tags-current").textContent =
+        photo_name + " Current tags: " + current_tags;
+      $('#updateTagsModal').modal('show');
+    });
+}
+
 function logout() {
   document.getElementById("settings-and-logout-form").submit();
 }

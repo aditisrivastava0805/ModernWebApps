@@ -81,6 +81,34 @@ def get_photo_tags(photo_name):
             return jsonify({"tags": photo.tags})
     return jsonify({"tags": ""})
 
+
+@app.route("/update_tags", methods=["POST"])
+def update_tags():
+    username = session.get('username', '')
+    photo_name = request.form.get('photo_name', '').strip()
+    new_tags = request.form.get('new_tags', '').strip()
+
+    updated = False
+    for photo in photos:
+        if photo.name == photo_name:
+            photo.tags = new_tags
+            updated = True
+            break
+
+    if updated:
+        status = "Photo " + photo_name + " tags updated successfully."
+    else:
+        status = "Photo " + photo_name + " not found."
+
+    upload_form_display = 'display:none;' if username.endswith('@gmail.com') else 'display:block;'
+    return render_template(
+        'photo-portal.html',
+        upload_form_display=upload_form_display,
+        username=username,
+        photo_upload_status=status,
+        photo_list=photos
+    )
+
 # Requirement 5
 # 5.1 Define the method that will handle the search_form submission
 # 5.3 Implement search of photos based the input criteria and the provided data
