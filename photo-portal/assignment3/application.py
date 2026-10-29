@@ -139,7 +139,11 @@ def get_tags_for_photo(photo):
     tags_to_return = ""
 
     # Query Database for photo and return the tags
-
+    db_session = DBSession()
+    photo_data = db_session.query(PhotoData).filter_by(name=photo).first()
+    if photo_data:
+        tags_to_return = photo_data.tags
+    db_session.close()
 
     ret_obj = {}
     ret_obj["tags"] = tags_to_return
