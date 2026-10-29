@@ -150,9 +150,12 @@
                 			{% endfor %}
 						</ol>
 						{% if not username.endswith('@gmail.com') %}
-						<a href="#">Delete Photo</a>
+						<a href="#" onclick="delete_selected_photo(); return false;">Delete Photo</a>
 						<hr>
 						<a href="#" onclick="open_update_tags_modal(); return false;">Update Tags</a>
+						<form id="delete-photo-form" action="/delete_photo" method="post" style="display:none;">
+							<input type="hidden" name="photo_name" id="delete_photo_name">
+						</form>
 						{% endif %}
 					</div>
 				</div> <!-- row2 -->

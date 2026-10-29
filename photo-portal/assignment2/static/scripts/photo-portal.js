@@ -56,6 +56,16 @@ function open_update_tags_modal() {
     });
 }
 
+function delete_selected_photo() {
+  var selected_photo = document.querySelector('input[name="selected_photo"]:checked');
+  if (!selected_photo) {
+    return;
+  }
+
+  document.getElementById("delete_photo_name").value = selected_photo.value;
+  document.getElementById("delete-photo-form").submit();
+}
+
 function logout() {
   document.getElementById("settings-and-logout-form").submit();
 }
