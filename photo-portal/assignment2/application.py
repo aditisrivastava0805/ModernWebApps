@@ -127,7 +127,7 @@ def delete_photo():
         os.remove(file_path)
 
     if deleted:
-        status = "Photo " + photo_name + " deleted successfully."
+        status = "Photo with name " + photo_name + " deleted."
     else:
         status = "Photo " + photo_name + " not found."
 
@@ -282,6 +282,14 @@ def index():
             'photo-portal.html',
             upload_form_display='display:none;',
             username=gmail,
+            photo_upload_status='TODO: Implement slide-show functionality',
+            photo_list=photos
+        )
+    if session.get('username', '').endswith('@gmail.com'):
+        return render_template(
+            'photo-portal.html',
+            upload_form_display='display:none;',
+            username=session.get('username', ''),
             photo_upload_status='TODO: Implement slide-show functionality',
             photo_list=photos
         )
