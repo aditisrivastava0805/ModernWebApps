@@ -22,6 +22,58 @@ function show_photo_details(photo_name, date_taken, tags) {
   alert("Photo:" + photo_name + " date_taken:" + date_taken + " tags:" + tags);
 }
 
+var slide_show_timer = null;
+var slide_show_photo_names = [];
+var slide_show_index = 0;
+
+function display_photo(photo_names, index) {
+  if (!photo_names || photo_names.length === 0) {
+    document.getElementById("slideshow-display").innerHTML = "";
+    return;
+  }
+
+  var photo_name = photo_names[index];
+  document.getElementById("slideshow-display").innerHTML =
+    '<img src="/static/images/photos/' + photo_name + '" style="max-width:100%; max-height:250px;">';
+}
+
+function start_slide_show() {
+  fetch("/photos")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      var photo_rows = data.photos || [];
+      slide_show_photo_names = photo_rows.map(function (row) {
+        return JSON.parse(row).name;
+      });
+
+      if (slide_show_photo_names.length === 0) {
+        document.getElementById("slideshow-display").innerHTML = "";
+        return;
+      }
+
+      slide_show_index = 0;
+      display_photo(slide_show_photo_names, slide_show_index);
+
+      if (slide_show_timer) {
+        clearInterval(slide_show_timer);
+      }
+
+      slide_show_timer = setInterval(function () {
+        slide_show_index = (slide_show_index + 1) % slide_show_photo_names.length;
+        display_photo(slide_show_photo_names, slide_show_index);
+      }, 3000);
+    });
+}
+
+function stop_slide_show() {
+  if (slide_show_timer) {
+    clearInterval(slide_show_timer);
+    slide_show_timer = null;
+  }
+}
+
 
 // Requirement 4.3 - Implement the preview_photo method that displays the photo in modal
 function preview_photo(photo_name) {

@@ -2,7 +2,6 @@ from flask import Flask, jsonify, redirect, request, url_for
 from flask import Response
 
 import json
-import requests
 import secrets
 
 import flask
