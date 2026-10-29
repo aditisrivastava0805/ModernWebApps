@@ -179,6 +179,32 @@ function handle_update_delete_form(action) {
 
 }
 
+function open_update_tags_modal() {
+  var selectedPhoto = document.querySelector('input[name="selected_photo"]:checked');
+  if (selectedPhoto == null) {
+    alert("Select a photo first.");
+    return;
+  }
+
+  var photoName = selectedPhoto.value;
+  document.getElementById("selectedPhotoName").value = photoName;
+  document.getElementById("selectedPhotoCurrentTags").textContent = photoName + " Current tags: Loading...";
+  document.getElementById("newPhotoTags").value = "";
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/photos/" + encodeURIComponent(photoName) + "/tags", true);
+  xhr.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      var response = JSON.parse(this.responseText);
+      document.getElementById("selectedPhotoCurrentTags").textContent =
+        photoName + " Current tags: " + response.tags;
+    }
+  };
+  xhr.send();
+
+  $("#updateTagsModal").modal("show");
+}
+
 function show_photo_details(photo_name, date_taken, tags) {
   alert("Photo:" + photo_name + " date_taken:" + date_taken + " tags:" + tags);
 }

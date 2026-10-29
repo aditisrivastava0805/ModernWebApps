@@ -1,7 +1,6 @@
 from flask import Flask, redirect, request, url_for
 from flask import Response
 
-import requests
 import secrets
 
 import flask
@@ -155,11 +154,27 @@ def get_tags_for_photo(photo):
 def update_tags():
     app.logger.info("Inside update_tags")
 
+    photo_name = request.form["selected_photo"].strip()
+    tags = request.form["tags"].strip()
+    db_session = DBSession()
+    photo_data = db_session.query(PhotoData).filter_by(name=photo_name).first()
+    status = ""
+    if photo_data:
+        photo_data.tags = tags
+        db_session.commit()
+        status = "Tags successfully updated for:" + photo_name
+    db_session.close()
 
     photos = load_photos()
 
+    username = flask.session.get("username", "")
     return render_template("photo-portal.html",
-                            photo_list=photos)
+                            username=username,
+                            upload_form_display="display:block;",
+                            slide_show_display="display:block;",
+                            photo_upload_status=status,
+                            photo_list=photos,
+                            user="admin")
 
 
 # Requirement 3.4
