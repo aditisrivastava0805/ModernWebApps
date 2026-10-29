@@ -59,6 +59,13 @@ function make_photos_call() {
               if (document.getElementById(photo_anchor_id) == null) {
                 photo_anchor_li = document.createElement("li");
                 photo_anchor_li.setAttribute("id", photo_anchor_id);
+                if (document.getElementById("photo_list").getAttribute("data-user") == "admin") {
+                  photo_radio = document.createElement("input");
+                  photo_radio.setAttribute("type", "radio");
+                  photo_radio.setAttribute("name", "selected_photo");
+                  photo_radio.setAttribute("value", photo_name);
+                  photo_anchor_li.appendChild(photo_radio);
+                }
                 photo_anchor = document.createElement("a");
                 photo_anchor.textContent = photo_name;
                 photo_anchor.setAttribute("href","#");

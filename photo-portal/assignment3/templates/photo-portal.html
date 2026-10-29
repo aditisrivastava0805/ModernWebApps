@@ -118,8 +118,13 @@
 					<div>
 						<!-- Requirement 3.1 and 4.1 --> 
 						<form id="update_delete_form" action="delete_photos" method="POST">
-							<ol id="photo_list">
+							<ol id="photo_list" data-user="{{ user|default('') }}">
 							</ol>
+							{% if user|default('') == "admin" %}
+								<a href="#" onclick="return false;">Delete Photo</a>
+								<hr>
+								<a href="#" onclick="return false;">Update Tags</a>
+							{% endif %}
 						</form>
 					</div>
 				</div> <!-- row2 -->
