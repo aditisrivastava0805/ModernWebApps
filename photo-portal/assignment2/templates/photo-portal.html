@@ -119,10 +119,18 @@
 					<ol id="photo_list">
 		                	{% for photo in photo_list %}
 		                	<li>
+								{% if not username.endswith('@gmail.com') %}
+								<input type="radio" name="selected_photo" value="{{ photo.name }}">
+								{% endif %}
         		          		<a href="#" onclick="show_photo_details('{{photo.name}}', '{{photo.date_taken}}', '{{photo.tags}}')"> {{ photo.name }} </a>
                 			</li>
                 			{% endfor %}
 						</ol>
+						{% if not username.endswith('@gmail.com') %}
+						<a href="#">Delete Photo</a>
+						<hr>
+						<a href="#">Update Tags</a>
+						{% endif %}
 					</div>
 				</div> <!-- row2 -->
 			</div>
