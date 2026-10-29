@@ -87,13 +87,19 @@ function make_photos_call() {
           // Remove photos from thumbnail list that have been deleted;
           // Remove photos from left-side list that have been deleted;
           // Make use of present_thumbnail_photo_list and present_photo_anchor_list
-          // For thumbnails:
-          // Iterate through the children of "available_photos_list"; check if the id is
-          // present in present_thumbnail_photo_list; If not present, delete the node.
+          thumbnail_list = document.getElementById("available_photos_list");
+          for (i = thumbnail_list.children.length - 1; i >= 0; i--) {
+            if (!present_thumbnail_photo_list.includes(thumbnail_list.children[i].id)) {
+              thumbnail_list.removeChild(thumbnail_list.children[i]);
+            }
+          }
 
-          // For photo_list:
-          // Iterate through the children of "photo_list"; check if the id is present
-          // in present_photo_anchor_list; If not present, delete the node.
+          photo_list = document.getElementById("photo_list");
+          for (i = photo_list.children.length - 1; i >= 0; i--) {
+            if (!present_photo_anchor_list.includes(photo_list.children[i].id)) {
+              photo_list.removeChild(photo_list.children[i]);
+            }
+          }
 
 
         }
@@ -102,23 +108,43 @@ function make_photos_call() {
 }
 
 // Variable that controls whether slide show should be stopped or keep on going
-slide_show_on = true;
+var slide_show_on = false;
+var slide_show_timeout = null;
+var slide_show_request = null;
 
 // Retrieves the photo names from the backend by making AJAX call to /photos endpoint
 function start_slide_show() {
-  console.log("start_slide_show called.")
-
-  // Requirement 5.1 
-  // Make AJAX call to "/photos" to retrieve the photos.
-  // Then call display_photo()
-
+  if (slide_show_on) {
+    return;
+  }
   slide_show_on = true;
 
+  slide_show_request = new XMLHttpRequest();
+  slide_show_request.open("GET", "/photos", true);
+  slide_show_request.onreadystatechange = function () {
+    if (this.readyState == 4) {
+      slide_show_request = null;
+      if (this.status == 200 && slide_show_on) {
+        photo_images = JSON.parse(this.responseText)["photos"];
+        if (photo_images.length > 0) {
+          display_photo(0, photo_images);
+        } else {
+          slide_show_on = false;
+        }
+      } else {
+        slide_show_on = false;
+      }
+    }
+  };
+  slide_show_request.send();
 }
 
 // Ref: https://stackoverflow.com/questions/30865456/javascript-loop-through-array-with-delay
 // index: index in the photos_images to diplay a photo.
 function display_photo(index, photo_images) {
+          if (!slide_show_on || photo_images.length == 0) {
+            return;
+          }
 
           photo_name = JSON.parse(photo_images[index])['name'];
           figure_elem = document.createElement("figure");
@@ -147,14 +173,22 @@ function display_photo(index, photo_images) {
           }
 
           if (slide_show_on == true) {
-              setTimeout(display_photo, 3000, newIndex, photo_images);
+              slide_show_timeout = setTimeout(display_photo, 3000, newIndex, photo_images);
           }
 }
 
 // Stop the slide show
 // Requirement 5.2
 function stop_slide_show() {
-  console.log("stop_slide_show called.")
+  slide_show_on = false;
+  if (slide_show_timeout != null) {
+    clearTimeout(slide_show_timeout);
+    slide_show_timeout = null;
+  }
+  if (slide_show_request != null) {
+    slide_show_request.abort();
+    slide_show_request = null;
+  }
 }
 
 
