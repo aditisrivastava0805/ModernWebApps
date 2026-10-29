@@ -175,8 +175,9 @@ function validate_data() {
 // Requirements 3.3 and 3.4
 // action will be "delete" or "update".
 function handle_update_delete_form(action) {
-
-
+  if (action == "delete") {
+    document.getElementById("update_delete_form").submit();
+  }
 }
 
 function open_update_tags_modal() {

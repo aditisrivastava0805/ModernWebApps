@@ -182,11 +182,28 @@ def update_tags():
 def delete_photos():
     app.logger.info("Inside delete_photos.")
 
+    photo_name = request.form["selected_photo"].strip()
+    db_session = DBSession()
+    photo_data = db_session.query(PhotoData).filter_by(name=photo_name).first()
+    if photo_data:
+        db_session.delete(photo_data)
+        db_session.commit()
+    db_session.close()
+
+    photo_path = os.path.join(PHOTO_FOLDER, photo_name)
+    if os.path.exists(photo_path):
+        os.remove(photo_path)
+
     photos = load_photos()
+    username = flask.session.get("username", "")
 
     return render_template("photo-portal.html",
-                            photo_list=photos
-                            )
+                            username=username,
+                            upload_form_display="display:block;",
+                            slide_show_display="display:block;",
+                            photo_upload_status="Photo with name " + photo_name + " deleted.",
+                            photo_list=photos,
+                            user="admin")
 
 
 

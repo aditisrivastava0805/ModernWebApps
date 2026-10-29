@@ -141,7 +141,7 @@
 							<ol id="photo_list" data-user="{{ user|default('') }}">
 							</ol>
 							{% if user|default('') == "admin" %}
-								<a href="#" onclick="return false;">Delete Photo</a>
+								<a href="#" onclick="handle_update_delete_form('delete'); return false;">Delete Photo</a>
 								<hr>
 								<a href="#" onclick="open_update_tags_modal(); return false;">Update Tags</a>
 							{% endif %}
