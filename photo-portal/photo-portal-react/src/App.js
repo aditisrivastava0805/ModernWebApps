@@ -16,7 +16,7 @@ function App() {
   return (
     <Routes>
       {/* path defines the URL, element defines what component to render */}
-      {/* Requirement 4.1 Add a Route for "/" for GeneralUser component  */}
+      <Route path="/" element={<GeneralUser />} />
       <Route path="/admin" element={<Admin />} /> 
       <Route path="/photo-portal" element={
 	      <>

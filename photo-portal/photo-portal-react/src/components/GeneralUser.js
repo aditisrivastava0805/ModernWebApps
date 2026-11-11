@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function GeneralUser() {
 
    const [gmail, setGmail] = useState("");
+   const [error, setError] = useState("");
    const navigate = useNavigate();
 
    const handleSubmit = async (e) => {
@@ -18,6 +19,10 @@ export default function GeneralUser() {
 
    if (response.ok) {
            const data = await response.json();
+           if (data.message !== "Success") {
+                   setError("User not found");
+                   return;
+           }
            localStorage.setItem("name", data.username);
 	   localStorage.setItem("usertype", "generaluser");
            navigate("/photo-portal");
@@ -41,10 +46,18 @@ export default function GeneralUser() {
                 <div className="centered"><h5>Photo Portal</h5></div>
                 <br/>
                 <br/>
-	        {/* Requirement 4.3: Show user not found if a gmail address that is not registered is entered. */}
+                {error && <div className="centered" style={{ color: "red" }}>{error}</div>}
                 <div className="centered">
                 <form onSubmit={handleSubmit} method="post" className="form-signin" style={{display: "flex", backgroundColor:"transparent", justifyContent:"center", alignItems: "center" }}    >
-	                {/* Requirement 4.2 Add input box for Gmail */}
+                        <input
+                                type="email"
+                                name="gmail"
+                                className="form-control"
+                                placeholder="Gmail address"
+                                value={gmail}
+                                onChange={(e) => { setGmail(e.target.value); setError(""); }}
+                                required
+                        />
                         <br/>
                         <br/>
                         <button type="submit" className="btn btn-primary">Login</button>
