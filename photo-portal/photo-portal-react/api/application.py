@@ -39,6 +39,15 @@ class GeneralUser(Base):
     gmail = Column(String(120), unique=True, nullable=False)
 
 
+class Photo(Base):
+    __tablename__ = "photo"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    date_taken = Column(String(50))
+    tags = Column(String(255))
+    comments = Column(String(1000))
+
+
 Base.metadata.create_all(engine)
 
 # Requirement 2.1
@@ -51,15 +60,24 @@ Base.metadata.create_all(engine)
 # Requirement 3.4
 @app.route("/api/photos/<photo_name>/comments", methods=["GET"])
 def get_photo_comments(photo_name):
-    print("Comments for:" + photo_name)
-    comments = "This is comment 1"
+    db = Session()
+    try:
+        photo = db.query(Photo).filter_by(name=photo_name).first()
+        comments = photo.comments if photo and photo.comments else ""
+    finally:
+        db.close()
     return jsonify({"comments": comments})
 
 
 # Requirement 3.3: Query the database to return photo metadata (date_taken and tags) for all photos
 @app.route("/api/photos", methods=["GET"])
 def get_photos():
-    photos = [{"name": p, "date_taken": "...", "tags": "..."} for p in os.listdir("static/images/photos")]
+    db = Session()
+    try:
+        photos = [{"name": p.name, "date_taken": p.date_taken, "tags": p.tags}
+                  for p in db.query(Photo).all()]
+    finally:
+        db.close()
     return jsonify({"photos": photos})
 
 
@@ -70,6 +88,7 @@ def upload_photo():
     file = request.files.get('photo_file')
     date_taken = request.form.get('date_taken')
     tags = request.form.get('tags')
+    comments = request.form.get('comments')
 
     # Requirement 3.2
 
@@ -79,11 +98,24 @@ def upload_photo():
     save_path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(save_path)
 
-    # You’d normally save metadata to DB here
+    db = Session()
+    try:
+        photo = db.query(Photo).filter_by(name=file.filename).first()
+        if photo:
+            photo.date_taken = date_taken
+            photo.tags = tags
+            photo.comments = comments
+        else:
+            db.add(Photo(name=file.filename, date_taken=date_taken, tags=tags, comments=comments))
+        db.commit()
+    finally:
+        db.close()
+
     return jsonify({
         'name': file.filename,
         'date_taken': date_taken,
-        'tags': tags
+        'tags': tags,
+        'comments': comments
     })
 
 # -- Admin user -- 
