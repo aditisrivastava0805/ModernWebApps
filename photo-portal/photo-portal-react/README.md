@@ -1,3 +1,8 @@
+## Name: Aditi Srivastava
+## eid: as229963
+## github: aditisrivastava0805
+## comments: comments: Default admin login at http://localhost:3000/admin is aditi@gmail.com / 1234 (seeded automatically on first run). General users must be registered first with POST /api/generaluser
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

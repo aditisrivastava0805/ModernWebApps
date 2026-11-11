@@ -50,6 +50,12 @@ class Photo(Base):
 
 Base.metadata.create_all(engine)
 
+# Seed the single pre-configured admin if none exists
+with Session() as seed_db:
+    if seed_db.query(Admin).count() == 0:
+        seed_db.add(Admin(username="aditi@gmail.com", password=generate_password_hash("1234")))
+        seed_db.commit()
+
 # Requirement 2.1
 # Add SQLAlchemy object to represent General User (refer assignment3)
 
@@ -236,9 +242,12 @@ def logout():
     data = request.get_json()
     print("Received:", data)
     username = data.get("userName")
-    user_type = "admin"
-    if "gmail.com" in username:
-        user_type = "general"
+    db = Session()
+    try:
+        is_admin = db.query(Admin).filter_by(username=username).first() is not None
+    finally:
+        db.close()
+    user_type = "admin" if is_admin else "general"
 
     flask.session.clear()
     return jsonify({"message": "Success", "usertype": user_type})
