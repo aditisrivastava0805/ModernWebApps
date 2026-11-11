@@ -33,6 +33,12 @@ class Admin(Base):
     password = Column(String(255), nullable=False)
 
 
+class GeneralUser(Base):
+    __tablename__ = "general_user"
+    id = Column(Integer, primary_key=True)
+    gmail = Column(String(120), unique=True, nullable=False)
+
+
 Base.metadata.create_all(engine)
 
 # Requirement 2.1
@@ -131,9 +137,32 @@ def admin_login():
 
 # -- General user --
 
-# Requirement 2.2 - Add a POST call to register a general user
+@app.route("/api/generaluser", methods=["POST"])
+def add_generaluser():
+    data = request.get_json() or {}
+    gmail = data.get("gmail")
+    if not gmail:
+        return jsonify({"error": "gmail required"}), 400
+    db = Session()
+    try:
+        if db.query(GeneralUser).filter_by(gmail=gmail).first():
+            return jsonify({"error": "User already exists"}), 409
+        user = GeneralUser(gmail=gmail)
+        db.add(user)
+        db.commit()
+        return jsonify({"id": user.id, "gmail": user.gmail}), 201
+    finally:
+        db.close()
 
-# Requirement 2.3 - Add a GET call to get all registered general users
+
+@app.route("/api/generaluser", methods=["GET"])
+def get_generalusers():
+    db = Session()
+    try:
+        users = [{"id": u.id, "gmail": u.gmail} for u in db.query(GeneralUser).all()]
+        return jsonify({"generalusers": users})
+    finally:
+        db.close()
 
 # Requirement 2.4 - Complete the generaluserlogin implementation
 @app.route("/api/generaluserlogin", methods=["POST"])
@@ -141,10 +170,14 @@ def generaluser_login():
     data = request.get_json()
     print("Received:", data)
     username = data.get("gmail")
+    db = Session()
+    try:
+        exists = db.query(GeneralUser).filter_by(gmail=username).first() is not None
+    finally:
+        db.close()
+    if not exists:
+        return jsonify({"message": "NotFound", "username": username})
     flask.session["username"] = username
-    # Query database to check if username/password exists or  not
-    # Replace the below if check with database query
-    # If the generaluser is not present, return NotFound
     return jsonify({"message": "Success", "username": username})
 
 # Requirement 2.3
