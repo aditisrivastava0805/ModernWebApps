@@ -14,10 +14,10 @@ I tested the API endpoints with Flask's test client, checking that user registra
 
 ## Screenshots
 
-![alt text](image.png)
+![Requirement 4.3](screenshots/image.png)
 
 Requirement 4.3; The general user login page shows "User not found" for an unregistered gmail address.
 
-![alt text](image-1.png)
+![Requirement 3.6](screenshots/image-1.png)
 
 Requirement 3.6; Clicking a thumbnail opens the modal with the photo and its comments retrieved from the backend.
