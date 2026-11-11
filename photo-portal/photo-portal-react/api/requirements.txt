@@ -1,8 +1,8 @@
-requests==2.21.0
-Flask==2.0.1
+requests
+Flask>=3.1
 flask-login
 flask_cors
-Jinja2==3.0.1
-Werkzeug==2.0.0
+Jinja2
+Werkzeug
 pyyaml
 SQLAlchemy

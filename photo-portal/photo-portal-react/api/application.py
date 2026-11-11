@@ -16,8 +16,24 @@ UPLOAD_FOLDER = 'static/images/photos'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+from werkzeug.security import generate_password_hash, check_password_hash
+
+engine = create_engine("sqlite:///photoportal.db")
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
+
+
 # Requirement 1.1
-# Add SQLAlchemy object to represent Admin User (refer assignment3)
+class Admin(Base):
+    __tablename__ = "admin"
+    id = Column(Integer, primary_key=True)
+    username = Column(String(80), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
+
+
+Base.metadata.create_all(engine)
 
 # Requirement 2.1
 # Add SQLAlchemy object to represent General User (refer assignment3)
@@ -66,9 +82,33 @@ def upload_photo():
 
 # -- Admin user -- 
 
-# Requirement 1.2 - Add a POST call to register an admin user
+@app.route("/api/admin", methods=["POST"])
+def add_admin():
+    data = request.get_json() or {}
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password:
+        return jsonify({"error": "username and password required"}), 400
+    db = Session()
+    try:
+        if db.query(Admin).filter_by(username=username).first():
+            return jsonify({"error": "User already exists"}), 409
+        admin = Admin(username=username, password=generate_password_hash(password))
+        db.add(admin)
+        db.commit()
+        return jsonify({"id": admin.id, "username": admin.username}), 201
+    finally:
+        db.close()
 
-# Requirement 1.3 - Add a GET call to get all registered admin users
+
+@app.route("/api/admin", methods=["GET"])
+def get_admins():
+    db = Session()
+    try:
+        admins = [{"id": a.id, "username": a.username} for a in db.query(Admin).all()]
+        return jsonify({"admins": admins})
+    finally:
+        db.close()
 
 # Requirement 1.4 - Complete the adminlogin implementation
 @app.route("/api/adminlogin", methods=["POST"])
@@ -77,9 +117,13 @@ def admin_login():
     print("Received:", data)
     username = data.get("name")
     password = data.get("password")
-    # Query database to check if username/password exists or  not
-    # Replace the below if check with database query
-    if username == "admin" and password == "admin":
+    db = Session()
+    try:
+        admin = db.query(Admin).filter_by(username=username).first()
+        valid = admin is not None and check_password_hash(admin.password, password or "")
+    finally:
+        db.close()
+    if valid:
         flask.session["username"] = username
         return jsonify({"message": "Success", "username": username})
     else:
