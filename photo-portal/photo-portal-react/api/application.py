@@ -81,7 +81,22 @@ def get_photos():
     return jsonify({"photos": photos})
 
 
-# Requirement 5 -- Add search functionality - Refer to your assignment2 implementation
+# Requirement 5 -- Add search functionality
+@app.route("/api/search", methods=["POST"])
+def search_photos():
+    data = request.get_json() or {}
+    search_type = (data.get("type") or "").lower()
+    query = (data.get("query") or "").strip()
+    columns = {"name": Photo.name, "date": Photo.date_taken, "tags": Photo.tags}
+    if search_type not in columns:
+        return jsonify({"error": "Invalid search type"}), 400
+    db = Session()
+    try:
+        photos = db.query(Photo).filter(columns[search_type].ilike(f"%{query}%")).all()
+        results = [{"name": p.name, "date_taken": p.date_taken, "tags": p.tags} for p in photos]
+    finally:
+        db.close()
+    return jsonify({"results": results})
 
 @app.route('/api/upload', methods=['POST'])
 def upload_photo():
